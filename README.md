@@ -3,7 +3,7 @@
 
 # 📊 Tulsa Workforce Data Warehouse – ETL Prototype
 
-This project is a **lightweight, end‑to‑end ETL pipeline** and prototype data warehouse built for **Tulsa For You and Me** to bring clarity and structure to messy workforce and wage data.  
+This project is a **lightweight, end‑to‑end ETL pipeline** and prototype data warehouse built for **Tulsa** to bring clarity and structure to messy workforce and wage data.  
 It standardizes disparate job and wage datasets into a **clean, analytics‑ready SQLite database** that can power future dashboards and labor market analysis for multiple workforce programs across Tulsa.  
 
 The workflow covers:
@@ -848,3 +848,4 @@ We gratefully acknowledge the following sources and contributors:
 - **Community & Documentation** — Thanks to the maintainers of public documentation, tutorials, and schema references that informed the ETL design and validation approach.
 
 ---
+
