@@ -177,6 +177,113 @@ pip install -r requirements.txt
 
 Once installed, you can run the ETL pipeline notebooks in sequence to build and validate the data warehouse.
 
+
+---
+
+## 🛠 Installing SQLite3 Locally
+
+SQLite3 is a lightweight, serverless database engine. Many systems already include it by default, but if not, follow the steps below to install it.
+
+### **Windows**
+1. Go to the official SQLite download page: [https://www.sqlite.org/download.html](https://www.sqlite.org/download.html)  
+2. Under **Precompiled Binaries for Windows**, download:
+   - `sqlite-tools-win32-x86-<version>.zip` (contains `sqlite3.exe`)
+3. Extract the ZIP file to a folder (e.g., `C:\sqlite`).
+4. Add that folder to your **PATH** environment variable so you can run `sqlite3` from any terminal:
+   - Search for “Edit the system environment variables” → **Environment Variables** → Edit **Path** → Add `C:\sqlite`.
+5. Open a new Command Prompt and verify:
+   ```bash
+   sqlite3 --version
+   ```
+
+
+### **macOS**
+SQLite3 is usually preinstalled. To check:
+```bash
+sqlite3 --version
+```
+If not installed or you want the latest version:
+```bash
+brew install sqlite
+```
+*(Requires [Homebrew](https://brew.sh/) to be installed.)*
+
+
+### **Linux (Debian/Ubuntu)**
+```bash
+sudo apt update
+sudo apt install sqlite3
+sqlite3 --version
+```
+
+### **Linux (Fedora/CentOS/RHEL)**
+```bash
+sudo dnf install sqlite
+sqlite3 --version
+```
+
+
+
+💡 **Tip:** If you’re using Python, you can also interact with SQLite via the built‑in `sqlite3` module — but having the CLI tool installed makes it easier to inspect and manage databases manually.
+
+
+This project uses the following core Python libraries from **PyPI**:  
+
+| Library        | Purpose |
+|----------------|---------|
+| **pandas**     | Data manipulation and cleaning |
+| **polars**     | High‑performance DataFrame operations for large datasets |
+| **SQLAlchemy** | Database connection management and ORM |
+| **sqlite-utils** | Lightweight SQLite database creation and management |
+
+> The full list of dependencies (including version pins) is in `requirements.txt`.
+
+
+### 🗄 Create Required SQLite Databases
+
+Before running the ETL pipeline, you need to create two **empty SQLite database files** in the project root:
+
+- `raw_occupation.db` — stores the raw, extracted staging tables.  
+- `curated_occupation.db` — stores the cleaned, transformed warehouse tables.
+
+**Steps:**
+
+1. Open a terminal in the project root directory.
+2. Run the following commands:
+
+```bash
+# Create empty raw database
+sqlite3 raw_occupation.db ".databases" ".exit"
+
+# Create empty curated database
+sqlite3 curated_occupation.db ".databases" ".exit"
+```
+
+Alternatively, you can create them in one go:
+
+```bash
+sqlite3 raw_occupation.db ".exit"
+sqlite3 curated_occupation.db ".exit"
+```
+
+3. Verify the files exist:
+
+```bash
+ls -l *.db
+```
+
+You should see:
+
+```
+-rw-r--r--  1 user  group  0 Aug 31 15:48 curated_occupation.db
+-rw-r--r--  1 user  group  0 Aug 31 15:48 raw_occupation.db
+```
+
+
+
+💡 **Tip:**  
+If you skip this step, the ETL scripts will fail when trying to connect to the databases for the first time.
+
 ---
 
 ## 🚀 Pipeline Flow
