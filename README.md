@@ -128,7 +128,10 @@ erDiagram
 ```
 ---
 
+## 
 ## 📂 Project Structure
+
+```
 .
 ├── generic_functions_01.py
 ├── raw_extraction_02.py
@@ -138,8 +141,9 @@ erDiagram
 ├── sql_scripts/               # Source SQL Scripts
 ├── curated_occupation.db      # Final curated SQLite DB
 ├── raw_occupation.db          # Raw extracted SQLite DB
-└── requirements.txt
+├── requirements.txt
 └── README.md
+```
 
 ---
 
