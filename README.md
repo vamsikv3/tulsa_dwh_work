@@ -667,6 +667,166 @@ conn.close()
 
 ---
 
+# 📊 Analysis Queries & Results
+
+## 1. Top 10 Skills for High‑Preparation Jobs
+
+**SQL:**
+```sql
+SELECT 
+    dlsa.anchor_description AS skill_name,
+    ROUND(AVG(fs.data_value), 2) AS avg_skill_score
+FROM fact_skills fs
+JOIN fact_job_zones fjz 
+    ON fs.onetsoc_code = fjz.onetsoc_code
+JOIN dim_job_zone_reference djzr 
+    ON fjz.job_zone = djzr.job_zone
+JOIN dim_level_scale_anchors dlsa 
+    ON fs.element_id = dlsa.element_id
+   AND fs.scale_id = dlsa.scale_id
+WHERE djzr.job_zone >= 4
+GROUP BY dlsa.anchor_description
+ORDER BY avg_skill_score DESC
+LIMIT 10;
+```
+
+**Output:**
+```text
+shape: (10, 2)
+┌─────────────────────────────────┬─────────────────┐
+│ skill_name                      ┆ avg_skill_score │
+│ ---                             ┆ ---             │
+│ str                             ┆ f64             │
+╞═════════════════════════════════╪═════════════════╡
+│ Understand an email from manag… ┆ 4.32            │
+│ Read step-by-step instructions… ┆ 4.32            │
+│ Read a scientific journal arti… ┆ 4.32            │
+│ Write legal brief challenging … ┆ 4.16            │
+│ Evaluate customer complaints a… ┆ 4.16            │
+│ Determine whether a subordinat… ┆ 4.16            │
+│ Write down a guest's order at … ┆ 4.03            │
+│ Write an email to staff outlin… ┆ 4.03            │
+│ Write a novel for publication   ┆ 4.03            │
+│ Take a customer's order         ┆ 4.02            │
+└─────────────────────────────────┴─────────────────┘
+```
+
+---
+
+## 2. Average Knowledge Score by Job Zone
+
+**SQL:**
+```sql
+SELECT 
+    djzr.job_zone,
+    djzr.name AS job_zone_name,
+    ROUND(AVG(fk.data_value), 2) AS avg_knowledge_score
+FROM fact_knowledge fk
+JOIN fact_job_zones fjz 
+    ON fk.onetsoc_code = fjz.onetsoc_code
+JOIN dim_job_zone_reference djzr 
+    ON fjz.job_zone = djzr.job_zone
+GROUP BY djzr.job_zone, djzr.name
+ORDER BY djzr.job_zone;
+```
+
+**Output:**
+```text
+shape: (4, 3)
+┌──────────┬─────────────────────────────────┬─────────────────────┐
+│ job_zone ┆ job_zone_name                   ┆ avg_knowledge_score │
+│ ---      ┆ ---                             ┆ ---                 │
+│ i64      ┆ str                             ┆ f64                 │
+╞══════════╪═════════════════════════════════╪═════════════════════╡
+│ 2        ┆ Job Zone Two: Some Preparation… ┆ 2.26                │
+│ 3        ┆ Job Zone Three: Medium Prepara… ┆ 2.31                │
+│ 4        ┆ Job Zone Four: Considerable Pr… ┆ 2.42                │
+│ 5        ┆ Job Zone Five: Extensive Prepa… ┆ 2.45                │
+└──────────┴─────────────────────────────────┴─────────────────────┘
+```
+
+---
+
+## 3. Occupations with Highest Ability Requirements
+
+**SQL:**
+```sql
+SELECT 
+    dod.title AS occupation_title,
+    dlsa.anchor_description AS ability_name,
+    ROUND(AVG(fa.data_value), 2) AS avg_ability_score
+FROM fact_abilities fa
+JOIN dim_occupation_data dod 
+    ON fa.onetsoc_code = dod.onetsoc_code
+JOIN dim_level_scale_anchors dlsa 
+    ON fa.element_id = dlsa.element_id
+   AND fa.scale_id = dlsa.scale_id
+GROUP BY dod.title, dlsa.anchor_description
+ORDER BY avg_ability_score DESC
+LIMIT 10;
+```
+
+**Output:**
+```text
+shape: (10, 3)
+┌─────────────────────────────────┬─────────────────────────────────┬───────────────────┐
+│ occupation_title                ┆ ability_name                    ┆ avg_ability_score │
+│ ---                             ┆ ---                             ┆ ---               │
+│ str                             ┆ str                             ┆ f64               │
+╞═════════════════════════════════╪═════════════════════════════════╪═══════════════════╡
+│ Education Administrators, Kind… ┆ Explain advanced principles of… ┆ 5.0               │
+│ Education Administrators, Kind… ┆ Give instructions to a lost mo… ┆ 5.0               │
+│ Education Administrators, Kind… ┆ Place an order at a restaurant… ┆ 5.0               │
+│ Financial Quantitative Analyst… ┆ Decide how to calculate profit… ┆ 5.0               │
+│ Financial Quantitative Analyst… ┆ Determine how much 20 oranges … ┆ 5.0               │
+│ Financial Quantitative Analyst… ┆ Determine the mathematics requ… ┆ 5.0               │
+│ Financial Quantitative Analyst… ┆ Understand a coach's oral inst… ┆ 5.0               │
+│ Financial Quantitative Analyst… ┆ Understand a lecture on advanc… ┆ 5.0               │
+│ Financial Quantitative Analyst… ┆ Understand a television commer… ┆ 5.0               │
+│ Natural Sciences Managers       ┆ Decide what factors to conside… ┆ 5.0               │
+└─────────────────────────────────┴─────────────────────────────────┴───────────────────┘
+```
+
+---
+
+## 4. Occupations with Broadest Ability Requirements
+
+**SQL:**
+```sql
+SELECT 
+    dod.title AS occupation_title,
+    COUNT(DISTINCT fa.element_id) AS distinct_abilities_count
+FROM fact_abilities fa
+JOIN dim_occupation_data dod 
+    ON fa.onetsoc_code = dod.onetsoc_code
+GROUP BY dod.title
+ORDER BY distinct_abilities_count DESC
+LIMIT 10;
+```
+
+**Output:**
+```text
+shape: (10, 2)
+┌─────────────────────────────────┬──────────────────────────┐
+│ occupation_title                ┆ distinct_abilities_count │
+│ ---                             ┆ ---                      │
+│ str                             ┆ i64                      │
+╞═════════════════════════════════╪══════════════════════════╡
+│ Wind Energy Operations Manager… ┆ 52                       │
+│ Wind Energy Development Manage… ┆ 52                       │
+│ Wholesale and Retail Buyers, E… ┆ 52                       │
+│ Water Resource Specialists      ┆ 52                       │
+│ Treasurers and Controllers      ┆ 52                       │
+│ Transportation, Storage, and D… ┆ 52                       │
+│ Training and Development Speci… ┆ 52                       │
+│ Training and Development Manag… ┆ 52                       │
+│ Telecommunications Engineering… ┆ 52                       │
+│ Tax Preparers                   ┆ 52                       │
+└─────────────────────────────────┴──────────────────────────┘
+```
+
+---
+
 ## 🙏 Credits & Acknowledgements
 
 This project builds on the work of many organizations and open data initiatives.  
